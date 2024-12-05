@@ -21,8 +21,6 @@ class TMGUI:
         self.tm = None
         self._jobs = []
 
-        self.tmFileName = ""
-
         self.main = master
         self.main.title("Turing Machine Simulator")
         self.main.geometry(DIMENSIONS)
@@ -36,9 +34,6 @@ class TMGUI:
 
         self.buttonSave = tk.Button(self.frameEditor, width=10, relief='groove', text="Save", command=self.saveTM)
         self.buttonSave.grid(row=2, column=2, padx=20, pady=5)
-
-        self.quickSave = tk.Button(self.frameEditor, width=10, relief='groove', text="Quick-Save", command=self.quick_saveTM)
-        self.quickSave.grid(row=2, column=1, padx=20, pady=5)
 
         self.buttonLoad = tk.Button(self.frameEditor, width=10, relief='groove', text="Load", command=self.loadTM)
         self.buttonLoad.grid(row=2, column=0, padx=20, pady=5)
@@ -143,36 +138,22 @@ class TMGUI:
 
     def saveTM(self):
         """Save a TM to a specification file from the editor and load it into the simulator"""
-        self.tmFileName = filedialog.asksaveasfilename(
+        tmFileName = filedialog.asksaveasfilename(
             initialdir=CWD,
             title="Select save directory",
             filetypes=[("TM files", "*.tm"), ("all", "*.*")],
             defaultextension=[("TM files", "*.tm"), ("all", "*.*")])
-        if self.tmFileName == '':
+        if tmFileName == '':
             return
-        tmFile = open(self.tmFileName, "w")
+        tmFile = open(tmFileName, "w")
         tmFile.write(self.textEditor.get(0.0, 'end'))
         tmFile.close()
         self.tm = None
         if self.two_tape.get():
-            self.tm = two_tape_TM(self.tmFileName, input=self.textTapeInput.get())
+            self.tm = two_tape_TM(tmFileName, input=self.textTapeInput.get())
         else:
-            self.tm = turing_machine(self.tmFileName, input=self.textTapeInput.get(), bidirectional=self.bidirectional.get())
+            self.tm = turing_machine(tmFileName, input=self.textTapeInput.get(), bidirectional=self.bidirectional.get())
         self.resetTM()
-
-    def quick_saveTM(self):
-        if self.tmFileName == "":
-            return
-        tmFile = open(self.tmFileName, "w")
-        tmFile.write(self.textEditor.get(0.0, 'end'))
-        tmFile.close()
-        self.tm = None
-        if self.two_tape.get():
-            self.tm = two_tape_TM(self.tmFileName, input=self.textTapeInput.get())
-        else:
-            self.tm = turing_machine(self.tmFileName, input=self.textTapeInput.get(), bidirectional=self.bidirectional.get())
-        self.resetTM()
-
 
     # Simulator Buttons
     def runTM(self):
